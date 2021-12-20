@@ -14,6 +14,7 @@ import cluster from 'cluster';
 import os from 'os';
 import authenticateToken from '@middleware/authenticate/index';
 import 'source-map-support/register';
+import { generatePDF } from './services/generatePDF.js';
 
 const totalCPUs = os.cpus().length;
 
@@ -23,7 +24,7 @@ export const init = () => {
   dotenv.config({ path: `.env.${process.env.ENVIRONMENT_NAME}` });
 
   // connect to database
-  connect();
+  // connect();
 
   // create the graphQL schema
   const schema = new GraphQLSchema({ query: QueryRoot, mutation: MutationRoot });
@@ -34,7 +35,7 @@ export const init = () => {
 
   app.use(express.json());
   app.use(rTracer.expressMiddleware());
-  app.use(unless(authenticateToken, '/', '/sign-in', '/sign-up'));
+  // app.use(unless(authenticateToken, '/', '/sign-in', '/sign-up'));
   app.use(
     '/graphql',
     graphqlHTTP({
@@ -66,10 +67,25 @@ export const init = () => {
   };
   createBodyParsedRoutes([signUpRoute, signInRoute]);
 
-  app.use('/', (req, res) => {
-    const message = 'Service up and running!';
-    logger().info(message);
-    res.json(message);
+  // app.use('/', (req, res) => {
+  //   const message = 'Service up and running!';
+  //   logger().info(message);
+  //   res.json(message);
+  // });
+  app.use('/pdf', async (req, res) => {
+    const pdf = await generatePDF(`
+      <html>
+        <head>
+          <title>Test PDF</title>
+        </head>
+        <body>
+           // The contents of our PDF will go here...
+        </body>
+      </html>
+    `);
+
+    res.set('Content-Type', 'application/pdf');
+    res.send(pdf);
   });
   /* istanbul ignore next */
   if (!isTestEnv()) {
