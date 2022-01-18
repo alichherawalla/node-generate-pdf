@@ -2,7 +2,10 @@ import puppeteer from 'puppeteer';
 
 export const generatePDF = async (html = '') => {
   try {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--disable-gpu', '--disable-dev-shm-usage', '--disable-setuid-sandbox', '--no-sandbox']
+    });
     const page = await browser.newPage();
 
     await page.setContent(html);

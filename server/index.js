@@ -14,7 +14,7 @@ import cluster from 'cluster';
 import os from 'os';
 import authenticateToken from '@middleware/authenticate/index';
 import 'source-map-support/register';
-import { generatePDF } from './services/generatePDF.js';
+import { generatePDF } from './services/pdf/generate';
 
 const totalCPUs = os.cpus().length;
 
